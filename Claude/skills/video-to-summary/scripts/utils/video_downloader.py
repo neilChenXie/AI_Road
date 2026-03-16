@@ -115,6 +115,15 @@ class VideoDownloader:
                 "--add-header", "Accept-Language: zh-CN,zh;q=0.9"
             ])
         
+        # 小红书配置
+        elif platform == "xiaohongshu":
+            cmd.extend([
+                "--referer", "https://www.xiaohongshu.com",
+                "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            ])
+            # 小红书视频通常是单一格式，使用简单选择器
+            cmd.extend(["-f", "0"])
+        
         # 通用功能
         cmd.extend([
             "--retries", "3",
