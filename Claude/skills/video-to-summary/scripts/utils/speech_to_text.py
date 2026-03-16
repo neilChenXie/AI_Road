@@ -40,11 +40,14 @@ class SpeechToText:
                 'whisper',
                 str(audio_path),
                 '--model', model,
-                '--language', language if language != 'auto' else '',
                 '--output_format', 'json',
                 '--output_dir', str(output_path),
                 '--verbose', 'False',
             ]
+
+            # Add language if specified (not 'auto')
+            if language and language != 'auto':
+                args.extend(['--language', language])
 
             # Temperature for deterministic output
             temperature = self.config.get('temperature', 0.0)
@@ -125,7 +128,7 @@ class SpeechToText:
             List of saved file paths
         """
         saved_files = []
-        base_name = transcript_data.get('text', 'transcript').split()[0]
+        base_name = "transcript"  # Fixed name to avoid filename too long error
 
         # Save JSON
         json_path = output_path / f"{base_name}.json"

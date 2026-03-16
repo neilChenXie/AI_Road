@@ -33,6 +33,10 @@ class VideoDownloader:
         if not platform_config.get('supports_cookies', False):
             return args
 
+        # XiaoHongShu uses custom headers instead of cookies
+        if platform == 'xiaohongshu':
+            return args  # XiaoHongShu handled separately with custom headers
+
         # Try browser cookies
         browser = self.config.get('cookies_browser',
                                   platform_config.get('preferred_cookies', 'chrome'))
@@ -40,6 +44,13 @@ class VideoDownloader:
         args.extend(['--cookies-from-browser', browser])
 
         return args
+
+    def _get_xiaohongshu_args(self) -> list:
+        """Get special arguments for XiaoHongShu downloads"""
+        return [
+            '--referer', 'https://www.xiaohongshu.com',
+            '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        ]
 
     def _get_format_args(self, url: str, audio_only: bool) -> list:
         """Get format-related arguments"""
@@ -58,13 +69,22 @@ class VideoDownloader:
             Video metadata dict or None
         """
         try:
+            # Detect platform
+            platform, _ = self.detector.detect(url)
+
             args = [
                 'yt-dlp',
                 '--dump-json',
                 '--no-playlist',
                 '--no-warnings',
             ]
-            args.extend(self._get_cookies_args(url))
+
+            # XiaoHongShu special handling
+            if platform == 'xiaohongshu':
+                args.extend(self._get_xiaohongshu_args())
+            else:
+                args.extend(self._get_cookies_args(url))
+
             args.append(url)
 
             result = subprocess.run(
@@ -110,6 +130,13 @@ class VideoDownloader:
             # Create output directory
             output_path.mkdir(parents=True, exist_ok=True)
 
+            # Detect platform for special handling
+            platform, _ = self.detector.detect(url)
+
+            # XiaoHongShu: Use exact command format as specified
+            if platform == 'xiaohongshu':
+                return self._download_xiaohongshu(url, output_path)
+
             # Get video info first
             info = self._get_info(url)
             if info:
@@ -118,7 +145,7 @@ class VideoDownloader:
             else:
                 self.logger.warning("Could not fetch video info")
 
-            # Build command
+            # Build command for other platforms
             args = [
                 'yt-dlp',
                 '--no-playlist',
@@ -175,6 +202,68 @@ class VideoDownloader:
             else:
                 self.logger.error("Could not find downloaded file")
                 return False, ""
+
+        except subprocess.TimeoutExpired:
+            self.logger.error("Download timeout")
+            return False, ""
+        except Exception as e:
+            self.logger.error(f"Download error: {e}")
+            return False, ""
+
+    def _download_xiaohongshu(self, url: str, output_path: Path) -> Tuple[bool, str]:
+        """
+        Download XiaoHongShu video using exact command format:
+        yt-dlp --referer "https://www.xiaohongshu.com" --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" "视频URL"
+
+        Args:
+            url: XiaoHongShu video URL
+            output_path: Output directory
+
+        Returns:
+            Tuple of (success, output_file_path)
+        """
+        try:
+            self.logger.info("XiaoHongShu: starting download directly")
+
+            # Use exact command format as specified
+            args = [
+                'yt-dlp',
+                '--referer', 'https://www.xiaohongshu.com',
+                '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                url
+            ]
+
+            self.logger.info(f"Downloading from {url}...")
+
+            # Run download
+            result = subprocess.run(
+                args,
+                capture_output=True,
+                text=True,
+                timeout=600
+            )
+
+            if result.returncode != 0:
+                self.logger.error(f"Download failed: {result.stderr}")
+                return False, ""
+
+            # Find downloaded file in current directory (yt-dlp default)
+            import os
+            current_dir = Path(os.getcwd())
+
+            # Look for common video extensions
+            for ext in ['mp4', 'mkv', 'webm', 'avi']:
+                downloaded = list(current_dir.glob(f"*.{ext}"))
+                if downloaded:
+                    # Move to output path
+                    output_file = output_path / "video.mp4"
+                    import shutil
+                    shutil.move(str(downloaded[0]), str(output_file))
+                    self.logger.success(f"Downloaded: {output_file.name}")
+                    return True, str(output_file)
+
+            self.logger.error("Could not find downloaded file")
+            return False, ""
 
         except subprocess.TimeoutExpired:
             self.logger.error("Download timeout")

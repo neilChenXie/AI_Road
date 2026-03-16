@@ -64,9 +64,9 @@ class PlatformDetector:
         'xiaohongshu': {
             'name': 'XiaoHongShu (小红书)',
             'supports_api': False,
-            'supports_cookies': True,
-            'preferred_cookies': 'chrome',
-            'requires_auth': True,
+            'supports_cookies': False,  # Uses custom command instead
+            'use_custom_command': True,  # Special handling with referer/user-agent
+            'requires_auth': False,
         },
         'tiktok': {
             'name': 'TikTok',

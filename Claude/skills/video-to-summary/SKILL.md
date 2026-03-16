@@ -37,9 +37,9 @@ python3 scripts/video_to_summary.py --url "URL" --audio-only
 
 | Platform | Support Level | Notes |
 |----------|--------------|-------|
+| **XiaoHongShu (小红书)** | Excellent | Uses optimized command with referer/user-agent |
 | **Bilibili (B站)** | Excellent | Official API support |
 | **YouTube** | Good | May require cookies |
-| **XiaoHongShu (小红书)** | Good | Auto-detects cookies |
 | **TikTok** | Good | Standard support |
 | **Twitter/X** | Good | Standard support |
 | **Other** | Variable | Any platform supported by yt-dlp |
@@ -182,10 +182,12 @@ output/
 
 ## Platform-Specific Notes
 
-### XiaoHongShu (小红书)
-- Auto-detects and uses Chrome cookies if available
-- Falls back to standard download if cookies fail
-- May require user interaction for some private videos
+### XiaoHongShu (小红书) - Recommended
+- Uses optimized download command with custom headers
+- Command format: `yt-dlp --referer "https://www.xiaohongshu.com" --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" "URL"`
+- **Important**: Use the full share URL including all query parameters (especially `xsec_token`)
+- No cookies required for public videos
+- Most reliable method for XiaoHongShu downloads
 
 ### YouTube
 - Age-restricted content requires cookies

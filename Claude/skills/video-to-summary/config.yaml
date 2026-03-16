@@ -38,5 +38,5 @@ platforms:
     bypass_412: true     # Bypass anti-crawling
 
   xiaohongshu:
-    auto_cookies: true   # Auto-detect cookies
-    fallback_mode: standard
+    use_custom_command: true   # Uses optimized download command
+    # Command: yt-dlp --referer "https://www.xiaohongshu.com" --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" "URL"

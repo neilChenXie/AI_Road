@@ -36,11 +36,20 @@ python3 scripts/video_to_summary.py --check-deps
 
 | 平台 | 支持度 | 说明 |
 |------|--------|------|
-| YouTube | ✅ | 可选使用 cookies |
+| 小红书 | ⭐ 推荐 | 使用优化的下载命令 |
 | Bilibili (B站) | ✅ | 官方 API 支持 |
-| 小红书 | ✅ | 自动检测 cookies |
+| YouTube | ✅ | 可选使用 cookies |
 | TikTok | ✅ | 标准支持 |
 | Twitter/X | ✅ | 标准支持 |
+
+### 小红书下载说明
+
+小红书视频使用专用下载命令：
+```bash
+yt-dlp --referer "https://www.xiaohongshu.com" --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" "完整分享链接"
+```
+
+**重要**：请使用完整的分享链接（包含所有参数，尤其是 `xsec_token`）。
 
 ## 输出格式
 
@@ -67,7 +76,9 @@ bash install.sh
 
 ### 下载失败
 
-对于需要认证的内容（如小红书私有视频），确保已登录浏览器。
+**小红书**：请使用完整的分享链接（包含 `xsec_token` 等参数）。
+
+**其他平台**：对于需要认证的内容，确保已登录浏览器。
 
 ### 识别不准
 
@@ -121,7 +132,7 @@ video-to-summary-v2/
 相比原版本的主要改进：
 
 - ✅ 自动依赖管理
-- ✅ 更好的平台支持（小红书自动 cookies）
+- ✅ **小红书优先支持** - 使用优化的下载命令
 - ✅ 自动生成结构化总结
 - ✅ 友好的错误提示
 - ✅ 结构化输出（JSON + Markdown）
