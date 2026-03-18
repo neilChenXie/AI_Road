@@ -12,6 +12,20 @@ Bash(cd /Users/chen/Project/AI_Road/Claude/.tmp/../skills/video-to-summary && py
 
 所以，我定位到问题：放到~/.claude/skills/文件夹下后，运行“总结视频：xxx”，根本没有去跑python脚本（AI基于自己的理解在用yt-dlp）。
 
+之后，我试图用/skill-creator重新创建这个功能的skill。但因为在同一个.claude/根配置下，新创建时，大量参考了本项目的文件和结构.
+
+```bash
+# AI_Road
+# ├── .claude/
+# └── Claude/
+#    └─── skills/
+#        ├── video-to-summary/
+#        └── video-to-summary-v2/
+```
+最终，放到~/.claude/skills/video-to-summary-v2/还是不行。
+
+通过Changelog v2.3.2记录的调试多轮后，依然不行。
+
 ## 过程
 
 人工小改之后，放到claude code发现无法正常运行。
@@ -91,3 +105,19 @@ Bash(cd /Users/chen/Project/AI_Road/Claude/.tmp/../skills/video-to-summary && py
 ## 找到关键问题
 
 所以，我定位到问题：放到~/.claude/skills/文件夹下后，运行“总结视频：xxx”，根本没有去跑python脚本（AI基于自己的理解在用yt-dlp）。
+
+## 试图重新用/skill-creator创建本skill
+
+之后，我试图用/skill-creator重新创建这个功能的skill。但因为在同一个.claude/根配置下，新创建时，大量参考了本项目的文件和结构.
+
+```bash
+# AI_Road
+# ├── .claude/
+# └── Claude/
+#    └─── skills/
+#        ├── video-to-summary/
+#        └── video-to-summary-v2/
+```
+最终，放到~/.claude/skills/video-to-summary-v2/还是不行。
+
+通过Changelog v2.3.2记录的调试多轮后，依然不行。

@@ -1,4 +1,4 @@
-# video-to-summary-v2 Changelog v2.3.1
+# video-to-summary-v2 Changelog v2.3.2
 
 ## 问题描述
 
