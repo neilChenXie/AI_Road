@@ -1,9 +1,9 @@
 ---
 name: video-to-summary
-description: "Convert video URLs to text summaries with speech-to-text transcription. Supports Bilibili (B站), YouTube, TikTok, XiaoHongShu (小红书), Twitter, and other platforms. Use when users provide video URLs and want to: (1) Extract and transcribe audio content, (2) Generate text summaries from videos, (3) Download and process video content for analysis. Triggers on phrases like '视频转文字', '视频总结', 'transcribe video', 'summarize video', '提取视频内容'."
+description: "Convert video URLs to text summaries with speech-to-text transcription. Supports Bilibili (B站), YouTube, TikTok, XiaoHongShu (小红书), Twitter, and other platforms. Use when users provide video URLs and want to: (1) Extract and transcribe audio content, (2) Generate text summaries from videos, (3) Download and process video content for analysis. Triggers on phrases like '视频转文字', '视频总结', '视频字幕提取', '音频转文字', 'transcribe video', 'summarize video', 'extract video content', '提取视频内容', 'video to text'."
 ---
 
-# Video to Summary V2
+# Video to Summary
 
 An optimized video-to-text tool with automatic speech recognition and intelligent summarization.
 
@@ -44,24 +44,15 @@ python scripts/video_to_summary.py "URL" --audio-only
 | **Twitter/X** | Good | Standard support |
 | **Other** | Variable | Any platform supported by yt-dlp |
 
-## Key Improvements (V2)
-
-- 🚀 **Auto dependency management** - One-command setup
-- 🎯 **Better platform support** - Smart cookie detection
-- 📝 **Auto summarization** - No manual work needed
-- 🔧 **Better error handling** - Clear messages and fixes
-- 📊 **Structured output** - JSON + Markdown formats
-- ⚙️ **Configurable** - YAML-based settings
-
 ## Installation
 
 ### Prerequisites
 
 ```bash
 # Install FFmpeg (system dependency)
-brew install ffmpeg          # macOS
+brew install ffmpeg  yt-dlp   # macOS
 # or
-sudo apt-get install ffmpeg  # Ubuntu/Debian
+sudo apt-get install ffmpeg yt-dlp # Ubuntu/Debian
 ```
 
 ### One-line Install
@@ -73,8 +64,8 @@ bash install.sh
 This will:
 1. Check Python version (requires 3.8+)
 2. Install Whisper using pipx (auto-managed venv)
-3. Install system dependencies
-4. Create necessary directories
+3. Install system dependencies（ffmpeg yt-dlp pipx）
+4. Create necessary directories（output）
 
 ## Configuration
 
@@ -107,13 +98,13 @@ output:
 
 ```bash
 # Process YouTube video
-python3 scripts/video_to_summary.py "https://youtube.com/watch?v=xxx"
+python scripts/video_to_summary.py "https://youtube.com/watch?v=xxx"
 
 # Process Bilibili video
-python3 scripts/video_to_summary.py "https://b23.tv/xxx"
+python scripts/video_to_summary.py "https://b23.tv/xxx"
 
 # Process XiaoHongShu video
-python3 scripts/video_to_summary.py "https://www.xiaohongshu.com/..."
+python scripts/video_to_summary.py "https://www.xiaohongshu.com/..."
 ```
 
 ### Advanced Options
@@ -138,7 +129,7 @@ python scripts/video_to_summary.py "URL" --keep-temp
 output/
 ├── video_id/
 │   ├── info.json              # Video metadata
-│   ├── transcript.json         # Full transcript with timestamps
+│   ├── transcript.json        # Full transcript with timestamps
 │   ├── transcript.txt         # Plain text transcript
 │   ├── summary.md             # AI-generated summary
 │   └── audio.mp3              # Extracted audio (if not audio-only)
@@ -200,7 +191,7 @@ output/
 
 ## Troubleshooting
 
-### "python3: command not found"
+### "python: command not found"
 ```bash
 # Install Python 3
 brew install python3  # macOS
@@ -222,8 +213,8 @@ pipx install openai-whisper
 
 ### "Video download failed"
 - Check URL is valid
-- For restricted content, ensure cookies are configured
-- Try with `--use-cookies` flag
+- For restricted content, configure cookies in `config.yaml`
+- For YouTube age-restricted videos, set `use_cookies: true` and `cookies_browser: chrome` in config
 
 ### Poor transcription quality
 ```bash
@@ -248,13 +239,13 @@ python scripts/video_to_summary.py "URL" --model large
 ### Project Structure
 
 ```
-video-to-summary-v2/
+video-to-summary/
 ├── SKILL.md                 # This file
 ├── config.yaml              # Configuration
 ├── requirements.txt         # Python dependencies
-├── install.sh              # Installation script
+├── install.sh               # Installation script
 └── scripts/
-    ├── video_to_summary.py # Main script
+    ├── video_to_summary.py  # Main script
     └── utils/
         ├── __init__.py
         ├── platform_detector.py  # Platform detection
@@ -263,7 +254,7 @@ video-to-summary-v2/
         ├── speech_to_text.py     # Speech recognition
         ├── text_summarizer.py    # Text summarization
         ├── dependency_checker.py # Dependency checking
-        └── logger.py            # Logging utilities
+        └── logger.py             # Logging utilities
 ```
 
 ## License

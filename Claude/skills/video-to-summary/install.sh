@@ -28,8 +28,8 @@ fi
 
 # Check Python version
 print_info "Checking Python version..."
-if command -v python3 &> /dev/null; then
-    PYTHON_VERSION=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+if command -v python &> /dev/null; then
+    PYTHON_VERSION=$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
     print_info "Found Python $PYTHON_VERSION"
 
     # Check if version is >= 3.8
@@ -66,7 +66,7 @@ else
     if [[ "$OSTYPE" == "darwin"* ]]; then
         brew install yt-dlp
     else
-        pip3 install --break-system-packages yt-dlp
+        pip install --break-system-packages yt-dlp
     fi
 fi
 
@@ -79,7 +79,7 @@ else
     if [[ "$OSTYPE" == "darwin"* ]]; then
         brew install pipx
     else
-        python3 -m pip install --user pipx
+        python -m pip install --user pipx
         pipx ensurepath
     fi
 fi
@@ -95,10 +95,10 @@ fi
 
 # Install Python dependencies
 print_info "Installing Python dependencies..."
-pip3 install --break-system-packages -r requirements.txt 2>/dev/null || {
+pip install --break-system-packages -r requirements.txt 2>/dev/null || {
     print_warning "Could not install system-wide packages. You may need to use a virtual environment."
     print_info "Creating virtual environment at ./venv..."
-    python3 -m venv ./venv
+    python -m venv ./venv
     source ./venv/bin/activate
     pip install -r requirements.txt
 }
@@ -114,6 +114,6 @@ echo ""
 print_info "Installation complete!"
 echo ""
 echo "Quick start:"
-echo "  python3 scripts/video_to_summary.py --url \"https://youtube.com/watch?v=xxx\""
+echo "  python scripts/video_to_summary.py \"https://youtube.com/watch?v=xxx\""
 echo ""
 echo "For more information, see SKILL.md"
