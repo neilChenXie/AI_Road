@@ -16,6 +16,7 @@ desktop.ini
 *.code-workspace
 
 .tmp/
+temp/
 
 #Python
 __pycache__/

@@ -35,7 +35,7 @@ xiaohongshu-video-summarizer/
 ├── SKILL.md                          # ✅ Skill定义和文档
 ├── README.md                         # ✅ 快速入门指南
 ├── scripts/
-│   ├── download_and_summarize.py    # ✅ 主脚本（286行）
+│   ├── xiaohongshu_download_and_summarize.py    # ✅ 主脚本（286行）
 │   └── install_deps.sh              # ✅ 依赖安装脚本
 ├── references/
 │   └── USAGE_GUIDE.md               # ✅ 详细使用指南
@@ -58,7 +58,7 @@ xiaohongshu-video-summarizer/
 - 参数配置说明
 - FAQ部分
 
-### 主脚本特性 (download_and_summarize.py)
+### 主脚本特性 (xiaohongshu_download_and_summarize.py)
 
 **类设计：XiaohongshuSummarizer**
 
@@ -125,7 +125,7 @@ xiaohongshu-video-summarizer/
 ```
 用户提供小红书URL
         ↓
-Claude调用 download_and_summarize.py
+Claude调用 xiaohongshu_download_and_summarize.py
         ↓
 [步骤1] 下载视频 (yt-dlp + headers)
         ↓
@@ -216,7 +216,7 @@ bash scripts/install_deps.sh
 # 2. 准备视频URL（复制小红书链接）
 
 # 3. 运行脚本
-python scripts/download_and_summarize.py "https://www.xiaohongshu.com/explore/xxx"
+python scripts/xiaohongshu_download_and_summarize.py "https://www.xiaohongshu.com/explore/xxx"
 ```
 
 ### 作为Skill使用

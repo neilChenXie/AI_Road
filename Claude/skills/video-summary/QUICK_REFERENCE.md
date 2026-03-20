@@ -35,13 +35,13 @@ URL → [yt-dlp下载] → [FFmpeg提取音频] → [Whisper转录] → [总结]
 bash scripts/install_deps.sh
 
 # 基础使用
-python scripts/download_and_summarize.py "URL"
+python scripts/xiaohongshu_download_and_summarize.py "URL"
 
 # 高精度模式
-python scripts/download_and_summarize.py "URL" --model medium
+python scripts/xiaohongshu_download_and_summarize.py "URL" --model medium
 
 # 保留所有文件
-python scripts/download_and_summarize.py "URL" --keep-files
+python scripts/xiaohongshu_download_and_summarize.py "URL" --keep-files
 ```
 
 ---
@@ -91,7 +91,7 @@ xiaohongshu-video-summarizer/
 ├── README.md                    # 快速入门
 ├── PROJECT_SUMMARY.md           # 项目总结
 ├── scripts/
-│   ├── download_and_summarize.py   # 主脚本 ⭐
+│   ├── xiaohongshu_download_and_summarize.py   # 主脚本 ⭐
 │   └── install_deps.sh             # 依赖安装
 ├── references/
 │   └── USAGE_GUIDE.md           # 详细使用指南

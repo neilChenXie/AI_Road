@@ -3,8 +3,8 @@
 小红书视频下载和总结脚本
 
 使用方法：
-    python download_and_summarize.py "视频URL"
-    python download_and_summarize.py "视频URL" --model base --language zh
+    python xiaohongshu_download_and_summarize.py "视频URL"
+    python xiaohongshu_download_and_summarize.py "视频URL" --model base --language zh
 """
 
 import sys
@@ -36,7 +36,7 @@ class XiaohongshuSummarizer:
         self.model = model
         self.language = language
         self.keep_files = keep_files
-        self.output_dir = Path(output_dir) if output_dir else Path.cwd()
+        self.output_dir = Path(output_dir) if output_dir else Path("./temp")
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
         # 创建临时工作目录
@@ -274,9 +274,9 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 示例:
-  python download_and_summarize.py "https://www.xiaohongshu.com/explore/xxx"
-  python download_and_summarize.py "https://..." --model base --language zh
-  python download_and_summarize.py "https://..." --keep-files --output-dir ./results
+  python xiaohongshu_download_and_summarize.py "https://www.xiaohongshu.com/explore/xxx"
+  python xiaohongshu_download_and_summarize.py "https://..." --model base --language zh
+  python xiaohongshu_download_and_summarize.py "https://..." --keep-files --output-dir ./results
         """
     )
     

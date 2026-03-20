@@ -27,7 +27,7 @@
 基础用法，由Claude代表用户运行：
 
 ```bash
-python scripts/download_and_summarize.py "https://www.xiaohongshu.com/explore/xxx"
+python scripts/xiaohongshu_download_and_summarize.py "https://www.xiaohongshu.com/explore/xxx"
 ```
 
 ### 带参数的用法
@@ -36,13 +36,13 @@ Claude可以根据用户需求调整参数：
 
 ```bash
 # 如果用户需要更高准确度
-python scripts/download_and_summarize.py "URL" --model medium
+python scripts/xiaohongshu_download_and_summarize.py "URL" --model medium
 
 # 如果用户需要保留所有文件
-python scripts/download_and_summarize.py "URL" --keep-files
+python scripts/xiaohongshu_download_and_summarize.py "URL" --keep-files
 
 # 如果用户需要保存到特定位置
-python scripts/download_and_summarize.py "URL" --output-dir ~/Documents/videos
+python scripts/xiaohongshu_download_and_summarize.py "URL" --output-dir ~/Documents/videos
 ```
 
 ## 用户交互示例
@@ -103,7 +103,7 @@ bash scripts/install_deps.sh
 ### 对于一般用户
 
 ```bash
-python scripts/download_and_summarize.py "URL"
+python scripts/xiaohongshu_download_and_summarize.py "URL"
 ```
 - 使用默认的base模型
 - 自动删除临时文件
@@ -112,7 +112,7 @@ python scripts/download_and_summarize.py "URL"
 ### 对于内容创作者
 
 ```bash
-python scripts/download_and_summarize.py "URL" --keep-files --output-dir ~/Videos
+python scripts/xiaohongshu_download_and_summarize.py "URL" --keep-files --output-dir ~/Videos
 ```
 - 保留所有原始文件用于进一步编辑
 - 指定输出目录便于管理
@@ -120,7 +120,7 @@ python scripts/download_and_summarize.py "URL" --keep-files --output-dir ~/Video
 ### 对于精确度要求高的用户
 
 ```bash
-python scripts/download_and_summarize.py "URL" --model medium
+python scripts/xiaohongshu_download_and_summarize.py "URL" --model medium
 ```
 - 使用medium或large模型获得更高准确度
 - 处理时间会更长，但转录质量更好
