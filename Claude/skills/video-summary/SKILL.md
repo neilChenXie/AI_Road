@@ -8,11 +8,19 @@ compatibility: 需要yt-dlp、FFmpeg、OpenAI Whisper、requests；Python 3.9+
 
 支持平台：**小红书**、**B站(Bilibili)**
 
+整体按四个步骤进行：
+1. **下载视频** 
+2. **提取音频** 
+3. **Whisper转录**
+4. **总结输出**
+
 ## 🚨 强制规则
 
 1. 用户提供的链接，**必须完整保留**
 2. **先识别平台**，再按对应流程处理
-3. B站视频**禁止使用yt-dlp直接下载**（会触发HTTP 412风控），必须使用 `scripts/bilibili_download.py`
+3. 所有中间文件存储在 `./temp/` 目录，处理完成后自动清理。
+4. 最终总结输出为 Markdown 格式，保存在 `./temp/` 目录下，命名格式为 `summary_YYYYMMDD_HHMMSS.md`。
+5. whisper默认使用base模型，除非用户明确要求更高准确度的模型（如medium或large）。
 
 ## 平台识别
 
@@ -21,48 +29,37 @@ compatibility: 需要yt-dlp、FFmpeg、OpenAI Whisper、requests；Python 3.9+
 | 平台 | URL特征 | 处理方式 |
 |------|---------|----------|
 | 小红书 | `xiaohongshu.com` 或 `xhslink.com`| yt-dlp下载 |
-| B站 | `bilibili.com` 或 `b23.tv` | B站API下载脚本 |
+| B站 | `bilibili.com` 或 `b23.tv` | 优先yt-dlp音频，失败用API脚本 |
 
 ---
 
-## 一、B站视频处理流程
+## Workflow：视频处理流程
 
-**重要：** B站有严格的风控策略，直接用yt-dlp下载会触发HTTP 412错误。必须使用专用的下载脚本。
+### 步骤1：下载视频
 
-### 使用下载脚本
+#### B站
+
+**方法一（优先）：yt-dlp直接获取音频**
+
+```bash
+yt-dlp -f "bestaudio" -o "video.%(ext)s" "https://www.bilibili.com/video/BVxxxxxx"
+```
+
+如果成功，直接获得音频文件，**跳过步骤2**，直接进入步骤3。
+
+**方法二（备用）：B站API下载脚本**
+
+如果yt-dlp失败（如触发HTTP 412风控），使用专用下载脚本：
 
 ```bash
 python scripts/bilibili_download.py "https://www.bilibili.com/video/BVxxxxxx"
 ```
 
-脚本支持的参数：
+脚本参数：
 - `--output-dir, -o` - 指定输出目录
 - `--keep-files, -k` - 保留临时文件
 
-### 脚本工作原理
-
-1. **解析URL** - 支持标准链接和b23.tv短链接
-2. **调用API获取视频信息** - 从 `api.bilibili.com/x/web-interface/view` 获取aid、cid、标题
-3. **获取DASH播放地址** - 从 `api.bilibili.com/x/player/playurl` 获取视频和音频URL
-4. **下载并合并** - 分别下载视频和音频，用FFmpeg合并
-
-### 后续处理：转录和总结
-
-下载完成后，提取音频并转录：
-
-```bash
-# 提取音频
-ffmpeg -i "视频文件.mp4" -q:a 0 -map a audio.mp3
-
-# Whisper转录
-whisper audio.mp3 --model base --language zh
-```
-
----
-
-## 二、小红书视频处理流程
-
-### 步骤1：下载视频
+#### 小红书
 
 ```bash
 yt-dlp --referer "https://www.xiaohongshu.com" \
@@ -74,21 +71,29 @@ yt-dlp --referer "https://www.xiaohongshu.com" \
 - `--referer` - 设置HTTP referer防止被阻止
 - `--user-agent` - 模拟浏览器请求
 
+---
+
 ### 步骤2：提取音频
 
-```bash
-ffmpeg -i input_video.mp4 -q:a 0 -map a output_audio.mp3
-```
-
-### 步骤3：语音转文字
+**跳过条件：** 如果步骤1用yt-dlp直接获取了音频文件，跳过此步骤。
 
 ```bash
-whisper audio_file.mp3 --model base --language zh
+ffmpeg -i input_video.mp4 -q:a 0 -map a audio.mp3
 ```
 
-### 步骤4：总结内容并输出
+---
 
-基于转录文本生成总结，输出为 Markdown 文件：
+### 步骤3：Whisper转录
+
+```bash
+whisper audio.mp3 --model base --language zh
+```
+
+---
+
+### 步骤4：总结并输出
+
+基于转录文本生成总结，输出为 Markdown 文件。
 
 **输出文件：** `./temp/summary_YYYYMMDD_HHMMSS.md`
 
@@ -109,14 +114,7 @@ whisper audio_file.mp3 --model base --language zh
 [转录的完整文本]
 ```
 
-### 步骤5：清理过程文件
-
-处理完成后自动删除以下临时文件：
-- 视频文件（.mp4/.m4s）
-- 音频文件（.mp3）
-- Whisper生成的转录文本文件（.txt）
-
-**保留文件：** 仅保留最终的 Markdown 总结文件
+**清理临时文件：** 处理完成后自动删除视频文件、音频文件、转录文本文件，仅保留最终的 Markdown 总结文件。
 
 ---
 
@@ -153,7 +151,7 @@ URL: [原始视频URL]
 
 | 错误类型 | 可能原因 | 解决方法 |
 |---------|--------|--------|
-| B站HTTP 412 | 使用yt-dlp直接下载 | 使用 `scripts/bilibili_download.py` |
+| B站yt-dlp失败 | 触发HTTP 412风控 | 自动切换到 `scripts/bilibili_download.py` |
 | B站API返回错误 | 视频不存在/会员专属 | 提示用户视频可能需要会员 |
 | 小红书下载失败 | URL无效或被封禁 | 检查URL格式，稍后重试 |
 | 音频提取失败 | FFmpeg未安装 | `brew install ffmpeg` |
@@ -168,7 +166,7 @@ URL: [原始视频URL]
 ## 环境准备
 
 ```bash
-# 安装yt-dlp (小红书下载)
+# 安装yt-dlp (视频下载)
 pip install yt-dlp
 
 # 安装Whisper (语音转文字)
@@ -185,8 +183,8 @@ brew install ffmpeg
 
 ## 常见问题
 
-**Q: B站视频为什么不能用yt-dlp？**
-A: B站有严格的风控策略，yt-dlp直接下载会触发HTTP 412错误。必须使用专用的 `bilibili_download.py` 脚本通过API方式下载。
+**Q: B站视频处理流程是什么？**
+A: B站视频优先使用yt-dlp直接获取音频（更快更简单）。如果yt-dlp触发HTTP 412风控，则自动切换到API下载脚本作为备用方案。
 
 **Q: B站会员专属视频能下载吗？**
 A: 不能。API方式无法获取会员专属视频的播放地址，需要提示用户该视频需要会员权限。
