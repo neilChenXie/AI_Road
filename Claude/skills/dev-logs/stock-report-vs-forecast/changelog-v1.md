@@ -60,6 +60,39 @@
 
 ---
 
+### 问题四：路径问题导致脚本执行失败
+
+**描述：**
+调试Python脚本时，AI经常弄错路径，导致脚本执行失败。
+
+**具体表现：**
+- 项目目录结构较深（`Claude/skills/stock-report-vs-forecast/`）
+- AI没有确认当前工作目录就执行相对路径命令
+- 报错"找不到文件"或"No such file or directory"
+
+**示例：**
+```bash
+# AI的错误操作
+pwd  # /Users/chen/Project/ai-road
+python scripts/main.py  # 报错！
+
+# 正确操作
+cd /Users/chen/Project/ai-road/Claude/skills/stock-report-vs-forecast
+python scripts/main.py  # 成功
+```
+
+**解决方案：**
+1. 在项目根目录创建 `CLAUDE.md`，明确路径使用规范
+2. 执行脚本前务必确认当前工作目录
+3. 优先使用绝对路径，或先cd到正确目录
+4. 养成 `pwd` 确认位置的习惯
+
+**已采取措施：**
+- 在 `/Users/chen/Project/ai-road/CLAUDE.md` 中增加路径使用规范
+- 将"执行脚本前务必确认当前工作目录"放到文档最前面作为重要提醒
+
+---
+
 ## 二、反思
 
 ### 当前版本局限
