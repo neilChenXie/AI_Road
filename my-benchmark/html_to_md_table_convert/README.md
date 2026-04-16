@@ -15,13 +15,13 @@ pip install -r requirements.txt
 ```bash
 source ~/.venv/bin/activate
 
-python html_to_markdown.py 2.4G以太网接口说明文档.html
+python html_to_markdown.py test-case-复杂表格.html
 ```
 
 ## prompt提示词
 
 ```bash
-通过 html_to_markdown.py 转化 《2.4G以太网接口说明文档.html》，结果中的表格有些问题：
+通过 html_to_markdown.py 转化 《test-case-复杂表格.html》，结果中的表格有些问题：
 
 | 返回类型 | 返回值 |  |  |  |  |
 | int | 0 |  |  |  |  |

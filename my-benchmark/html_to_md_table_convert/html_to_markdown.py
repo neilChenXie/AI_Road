@@ -17,48 +17,79 @@ def convert_table(table):
     if not trs:
         return ""
 
-    num_rows = len(trs)
-    # 用grid直接构建，跳过已被rowspan占用的位置
-    # 先估算列数（两遍扫描）
-    # 第一遍：构建grid，动态扩展列数
-    grid = {}  # (row, col) -> cell_info
+    # 解析原始表格结构
+    raw_cells = []  # 原始单元格数据
 
-    for row_idx, tr in enumerate(trs):
+    for tr in trs:
+        row_data = []
         col_idx = 0
         for td in tr.find_all(['td', 'th']):
-            # 跳过已被rowspan占用的列
-            while (row_idx, col_idx) in grid:
-                col_idx += 1
             colspan = int(td.get('colspan', 1))
             rowspan = int(td.get('rowspan', 1))
             text = td.get_text().strip()
-            cell = {'text': text, 'colspan': colspan}
-            for r in range(rowspan):
-                for c in range(colspan):
-                    grid[(row_idx + r, col_idx + c)] = cell
+
+            while len(row_data) < col_idx:
+                row_data.append(None)
+
+            row_data.append({'text': text, 'rowspan': rowspan, 'colspan': colspan})
             col_idx += colspan
 
-    if not grid:
-        return ""
+        raw_cells.append(row_data)
 
-    max_cols = max(c for (_, c) in grid.keys()) + 1
+    # 计算最大列数
+    max_cols = max(len(row) for row in raw_cells) if raw_cells else 0
+
+    # 填充到矩形
+    for row in raw_cells:
+        while len(row) < max_cols:
+            row.append(None)
+
+    # 构建单元格位置映射表，处理rowspan
+    # cell_at[row][col] = cell_info 或 None
+    # 先填充所有单元格到临时结构
+    temp_grid = [[None] * max_cols for _ in range(len(raw_cells))]
+
+    for row_idx, row in enumerate(raw_cells):
+        col_idx = 0
+        for cell in row:
+            if cell:
+                colspan = cell.get('colspan', 1)
+                rowspan = cell.get('rowspan', 1)
+
+                # 将单元格信息填充到grid中
+                for r in range(rowspan):
+                    for c in range(colspan):
+                        if row_idx + r < len(temp_grid) and col_idx + c < max_cols:
+                            temp_grid[row_idx + r][col_idx + c] = cell
+
+                col_idx += colspan
+            else:
+                col_idx += 1
 
     # 生成最终行
     result_rows = []
-    for row_idx in range(num_rows):
+    for row_idx in range(len(raw_cells)):
         final_row = []
         col_idx = 0
+
         while col_idx < max_cols:
-            cell = grid.get((row_idx, col_idx))
+            cell = temp_grid[row_idx][col_idx] if row_idx < len(temp_grid) and col_idx < max_cols else None
+
             if cell:
-                colspan = cell['colspan']
-                final_row.append(cell['text'])
+                text = cell['text']
+                colspan = cell.get('colspan', 1)
+                final_row.append(text)
+                # colspan > 1时，后续列留空
                 for _ in range(colspan - 1):
                     final_row.append('')
                 col_idx += colspan
             else:
                 final_row.append('')
                 col_idx += 1
+
+        # 填充到max_cols
+        while len(final_row) < max_cols:
+            final_row.append('')
         result_rows.append(final_row[:max_cols])
 
     # 生成Markdown表格
